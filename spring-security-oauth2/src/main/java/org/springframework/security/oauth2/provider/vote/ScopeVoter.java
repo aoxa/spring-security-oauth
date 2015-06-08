@@ -144,13 +144,17 @@ public class ScopeVoter implements AccessDecisionVoter<Object> {
 						return ACCESS_GRANTED;
 					}
 				}
-				if (result == ACCESS_DENIED && throwException) {
+			}
+		}
+		// this was removed from line 147. If the user failed to have the scope, it will fail, 
+		// but it will fails as well even if the user had another scope that was not placed first in the access list.
+		// the bahavior of this class is different from the RoleVoter one, that checks all roles before failing. With this change, 
+		// it will verify all scopes before failing as well.
+		if (result == ACCESS_DENIED && throwException) {
 					InsufficientScopeException failure = new InsufficientScopeException(
 							"Insufficient scope for this resource", Collections.singleton(attribute.getAttribute()
 									.substring(scopePrefix.length())));
 					throw new AccessDeniedException(failure.getMessage(), failure);
-				}
-			}
 		}
 
 		return result;
